@@ -8,14 +8,14 @@ Install-Module AzSentinel -Scope CurrentUser -Force -AllowClobber
 Import-Module AzSentinel
 
 #Name of the Azure DevOps artifact
-$artifactName = "RulesFile"
+# $artifactName = "RulesFile"
 
 #Build the full path for the analytics rule file
-$artifactPath = Join-Path $env:Pipeline_Workspace $artifactName 
-$rulesFilePath = Join-Path $artifactPath $RulesFile
+# $artifactPath = Join-Path $env:Pipeline_Workspace $artifactName 
+# $rulesFilePath = Join-Path $artifactPath $RulesFile
 
 try {
-    Import-AzSentinelAlertRule -WorkspaceName $Workspace -SettingsFile $rulesFilePath
+    Import-AzSentinelAlertRule -WorkspaceName $Workspace -SettingsFile $RulesFile
 }
 catch {
     $ErrorMessage = $_.Exception.Message
