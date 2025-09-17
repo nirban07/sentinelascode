@@ -2,12 +2,9 @@
 # This pipeline publishes the rules file as an artifact and then uses a powershell task to deploy
 
 name: build and deploy Alert Rules
-resources:
- pipelines:
-   - pipeline: Scripts
-     source: 'scriptsCI'
+
 trigger:
-- master
+- main
 
 pool:
  vmImage: "windows-2019"
