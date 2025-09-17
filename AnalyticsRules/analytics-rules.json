@@ -1,84 +1,98 @@
 {
+  "MicrosoftSecurityIncidentCreation": [],
   "Scheduled": [
     {
-      "displayName": "AlertRule01",
-      "description": "",
-      "severity": "Medium",
-      "enabled": true,
-      "query": "SecurityEvent | where EventID == \"4688\" | where CommandLine contains \"-noni -ep bypass $\"",
-      "queryFrequency": "4H",
-      "queryPeriod": "6H",
+      "queryFrequency": "PT5M",
+      "queryPeriod": "PT5M",
       "triggerOperator": "GreaterThan",
-      "triggerThreshold": 5,
-      "suppressionDuration": "6H",
+      "triggerThreshold": 0,
+      "eventGroupingSettings": {
+        "aggregationKind": "SingleAlert"
+      },
+      "severity": "Medium",
+      "query": "Syslog\r\n| where SyslogMessage has \"Failed password\"\r\n| parse SyslogMessage with * \"from \" src_ip:string \" port\" *\r\n| summarize FailedCount = count() by src_ip, bin(TimeGenerated, 1h), SyslogMessage\r\n| extend EntityName = case(src_ip == \"95.167.225.76\",\"Client1\",src_ip==\"134.199.155.93\",\"Client2\",\"Client3\")\r\n| where FailedCount >= 1",
+      "suppressionDuration": "PT5H",
       "suppressionEnabled": false,
       "tactics": [
-        "Persistence",
-        "LateralMovement",
-        "Collection"
+        "CredentialAccess",
+        "InitialAccess"
       ],
-      "playbookName": "",
-      "aggregationKind": "SingleAlert",
-      "createIncident": true,
-      "groupingConfiguration": {
-        "enabled": false,
-        "reopenClosedIncident": false,
-        "lookbackDuration": "PT5H",
-        "entitiesMatchingMethod": "All",
-        "groupByEntities": [
-          "Account",
-          "Ip",
-          "Host",
-          "Url"
-        ]
-      }
+      "displayName": "Brute Force Detection (Syslog)",
+      "enabled": true,
+      "description": "Detects repeated failed login attempts via Syslog",
+      "alertRuleTemplateName": null,
+      "createIncident": null,
+      "groupingConfiguration": null,
+      "playbookName": ""
     },
     {
-      "displayName": "AlertRule02",
-      "description": "",
-      "severity": "Medium",
-      "enabled": true,
-      "query": "SecurityEvent | where EventID == \"4688\" | where CommandLine contains \"-noni -ep bypass $\"",
-      "queryFrequency": "5H",
-      "queryPeriod": "5H",
+      "queryFrequency": "PT5H",
+      "queryPeriod": "PT5H",
       "triggerOperator": "GreaterThan",
-      "triggerThreshold": 5,
-      "suppressionDuration": "6H",
+      "triggerThreshold": 0,
+      "eventGroupingSettings": {
+        "aggregationKind": "SingleAlert"
+      },
+      "severity": "Medium",
+      "query": "SecurityAlert | take 1\r\n",
+      "suppressionDuration": "PT5H",
+      "suppressionEnabled": false,
+      "tactics": [],
+      "displayName": "Test-Rule",
+      "enabled": true,
+      "description": "",
+      "alertRuleTemplateName": null,
+      "createIncident": null,
+      "groupingConfiguration": null,
+      "playbookName": ""
+    },
+    {
+      "queryFrequency": "PT5M",
+      "queryPeriod": "PT5M",
+      "triggerOperator": "GreaterThan",
+      "triggerThreshold": 0,
+      "eventGroupingSettings": {
+        "aggregationKind": "SingleAlert"
+      },
+      "severity": "High",
+      "query": "_GetWatchlist('HVA')\r\n| extend  UPN = 'demouser@mctsamiktrng01.onmicrosoft.com'\r\n| extend IP = '192.168.1.1'",
+      "suppressionDuration": "PT5H",
       "suppressionEnabled": false,
       "tactics": [
-        "Persistence",
-        "LateralMovement",
-        "Collection"
+        "InitialAccess"
       ],
+      "displayName": "Successful Detection of a Brute force Attack",
+      "enabled": true,
+      "description": "Successful Detection of a Brute force Attack",
+      "alertRuleTemplateName": null,
+      "createIncident": null,
+      "groupingConfiguration": null,
       "playbookName": ""
     }
   ],
   "Fusion": [
     {
       "displayName": "Advanced Multistage Attack Detection",
-      "enabled": true,
-      "alertRuleTemplateName": "f71aba3d-28fb-450b-b192-4e76a83015c8"
-    }
-  ],
-  "MLBehaviorAnalytics": [
-    {
-      "displayName": "(Preview) Anomalous SSH Login Detection",
-      "enabled": true,
-      "alertRuleTemplateName": "fa118b98-de46-4e94-87f9-8e6d5060b60b"
-    }
-  ],
-  "MicrosoftSecurityIncidentCreation": [
-    {
-      "displayName": "Create incidents based on Azure Active Directory Identity Protection alerts",
-      "description": "Create incidents based on all alerts generated in Azure Active Directory Identity Protection",
-      "enabled": true,
-      "productFilter": "Azure Active Directory Identity Protection",
-      "severitiesFilter": [
-        "High",
-        "Medium",
-        "Low"
+      "description": "Microsoft Sentinel uses Fusion, a correlation engine based on scalable machine learning algorithms, to automatically detect multistage attacks by identifying combinations of anomalous behaviors and suspicious activities that are observed at various stages of the kill chain. On the basis of these discoveries, Azure Sentinel generates incidents that would otherwise be very difficult to catch. By design, these incidents are low-volume, high-fidelity, and high-severity, which is why this detection is turned ON by default.\n\nSince Fusion correlates multiple signals from various products to detect advanced multistage attacks, successful Fusion detections are presented as Fusion incidents on the Microsoft Sentinel Incidents page. This rule covers the following detections:\n- Fusion for emerging threats\n- Fusion for ransomware\n- Scenario-based Fusion detections (122 scenarios)\n\nTo enable these detections, we recommend you configure the following data connectors for best results:\n- Out-of-the-box anomaly detections\n- Microsoft Entra ID Protection\n- Azure Defender\n- Azure Defender for IoT\n- Microsoft 365 Defender\n- Microsoft Cloud App Security    \n- Microsoft Defender for Endpoint\n- Microsoft Defender for Identity\n- Microsoft Defender for Office 365\n- Scheduled analytics rules, both built-in and those created by your security analysts. Analytics rules must contain kill-chain (tactics) and entity mapping information in order to be used by Fusion.\n\nFor the full description of each detection that is supported by Fusion, go to https://aka.ms/SentinelFusion.",
+      "alertRuleTemplateName": "f71aba3d-28fb-450b-b192-4e76a83015c8",
+      "tactics": [
+        "Collection",
+        "CommandAndControl",
+        "CredentialAccess",
+        "DefenseEvasion",
+        "Discovery",
+        "Execution",
+        "Exfiltration",
+        "Impact",
+        "InitialAccess",
+        "LateralMovement",
+        "Persistence",
+        "PrivilegeEscalation"
       ],
-      "displayNamesFilter": null
+      "severity": "High",
+      "enabled": true,
+      "playbookName": ""
     }
-  ]
+  ],
+  "MLBehaviorAnalytics": []
 }
